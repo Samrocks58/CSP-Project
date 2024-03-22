@@ -11,4 +11,4 @@ This code is available at this [repository on github](https://github.com/Samrock
 ## Requirements
 * Python 3
 * Windows Operating System
-* Code Editor that supports Python to run it on
+* Code Editor that supports Python
