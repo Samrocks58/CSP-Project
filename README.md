@@ -9,6 +9,6 @@ The main reason I made this program is because I thought it would be an interest
 This code is available at this [repository on github](https://github.com/Samrocks58/CSP-Project)
 
 ## Requirements
-~ Python 3
-~ Windows Operating System
-~ Code Editor that supports Python to run it on
+~Python 3
+~Windows Operating System
+~Code Editor that supports Python to run it on
