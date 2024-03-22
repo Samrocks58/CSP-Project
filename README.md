@@ -22,3 +22,6 @@ This code is available at this [repository on github](https://github.com/Samrock
 * If your inputs aren't working or are delayed, try using WASD instead of arrow keys
 * If no inputs are working at all, check that your system uses Windows Operating System
 * Check that you have Python set up correctly in your editor and that your version of Python has the libraries msvcrt, os, time, and random
+
+## Bibliography
+All libraries used are included with Python versions 3 and up.
