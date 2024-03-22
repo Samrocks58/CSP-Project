@@ -17,7 +17,6 @@ This code is available at this [repository on github](https://github.com/Samrock
 * Download the code from the repository
 * Open up any editor that supports Python
 * Copy in the code and run it
-* 
 
 ## Troubleshooting
 * If your inputs aren't working, try using WASD instead of arrow keys
