@@ -7,10 +7,12 @@ passive_blocks = []
 snake_head = [MoveX, MoveY]
 coinPos = [random.randint(0,9)*2, random.randint(0, ROWS-2)]
 direction=1 #1: right 2: up 3: left 4: down
-blocks = [[MoveX-4, MoveY], [MoveX-3, MoveY], [MoveX-2, MoveY], [MoveX-1, MoveY], [MoveX, MoveY]]
+blocks = [[MoveX, MoveY]]
 old_pos = [MoveX, MoveY]
-length = 10
+length = 1
 keyPressed = False
+game_over = False
+coinCollected = False
 
 def print_board():
     global blocks
@@ -23,11 +25,14 @@ def print_board():
             rowString += "|"
             spacesMoved = 0
             copyList = blocks.copy()
+            copyList.append(coinPos)
             for b in sort_blocks(copyList):
                 if i == b[1]:
                     square = "[]"
                     if (b == snake_head):
                         square = "00"
+                    if (b == coinPos):
+                        square = "()"
                     rowString += " " * (b[0]-spacesMoved) + square
                     spacesMoved = b[0]+2
             rowString += " " * (20-spacesMoved) + "|" + "\n"
@@ -63,7 +68,7 @@ def check_input():
 
 elapsed_time = 0
 def gameloop():
-    global blocks, MoveX, MoveY, direction, elapsed_time, snake_head, old_pos, length, keyPressed
+    global blocks, MoveX, MoveY, direction, elapsed_time, snake_head, old_pos, length, keyPressed, game_over, coinPos, coinCollected
     while True:
         start_time = time.perf_counter()
         check_input()
@@ -71,10 +76,25 @@ def gameloop():
         if elapsed_time >= 1/8:
             keyPressed = False
             print_board()
+            print(f"Score: {len(blocks)-1}")
             elapsed_time = 0
 
-            # copy = blocks.copy()
-            # copy.remove([MoveX, MoveY])
+            if game_over:
+                print_board()
+                print("You Died!")
+                print(f"Final Score: {len(blocks)-1}\n")
+                quit()
+
+            if coinCollected:
+                length += 1
+                coinPos = [random.randint(0,9)*2, random.randint(0, ROWS-2)]
+                closeX = abs(MoveX-coinPos[0]) <= 3
+                closeY = abs(MoveY-coinPos[1]) <= 3
+                while (coinPos in blocks) or (direction % 2 == 1 and closeX) or (direction % 2 == 0 and closeY):
+                    coinPos = [random.randint(0,9)*2, random.randint(0, ROWS-2)]
+                    closeX = abs(MoveX-coinPos[0]) <= 3
+                    closeY = abs(MoveY-coinPos[1]) <= 3
+                coinCollected = False
 
             if direction == 1:
                 MoveX += 2
@@ -93,31 +113,20 @@ def gameloop():
                 MoveY = 0
             if MoveY < 0:
                 MoveY = ROWS-2
-
-            # if copy.count([MoveX, MoveY]) >= 1:
-            print(blocks)
-            if blocks.count([MoveX, MoveY]) >= 1:
-                print_board()
-                print("You Died!\n")
-                quit()
-
-            snake_head = [MoveX, MoveY]
+                
             blocks.append(old_pos)
             old_pos=[MoveX, MoveY]
 
-            print(f"len: {len(blocks)}")
+            if [MoveX, MoveY] == coinPos:
+                coinCollected = True
+
             if len(blocks) > length:
-                # if blocks[0] == snake_head:
-                #     del blocks[1]
-                # else:
                 del blocks[0]
-            
 
             snake_head = blocks[-1]
-            # if not (snake_head in blocks):
-            #     # blocks.remove(snake_head)
-            #     blocks.append(snake_head)
-            #     print("yay")
+
+            if blocks.count([MoveX, MoveY]) >= 1:
+                game_over = True
 
         end_time = time.perf_counter()
         elapsed_time += (end_time-start_time)
