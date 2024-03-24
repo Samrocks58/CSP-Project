@@ -1,11 +1,13 @@
 import msvcrt, os, time, random
 
 ROWS = 10+1
-MoveX = 12
-MoveY = 4
+width = 10 * 2
+MoveX = (width // 2) - 2
+MoveY = (ROWS-1) // 2 - 1
+
 passive_blocks = []
 snake_head = [MoveX, MoveY]
-coinPos = [random.randint(0,9)*2, random.randint(0, ROWS-2)]
+coinPos = [random.randint(0,width//2-1)*2, random.randint(0, ROWS-2)]
 direction=1 #1: right 2: up 3: left 4: down
 blocks = [[MoveX, MoveY]]
 old_pos = [MoveX, MoveY]
@@ -20,7 +22,7 @@ def print_board():
     rowString = ""
     for i in range(ROWS):
         if i == 0:
-            rowString += " " + "_" * 20 + "\n"
+            rowString += " " + "_" * width + "\n"
         if i < ROWS-1:
             rowString += "|"
             spacesMoved = 0
@@ -35,9 +37,10 @@ def print_board():
                         square = "()"
                     rowString += " " * (b[0]-spacesMoved) + square
                     spacesMoved = b[0]+2
-            rowString += " " * (20-spacesMoved) + "|" + "\n"
+            rowString += " " * (width-spacesMoved) + "|" + "\n"
         else:
-            rowString += " " + "-" * 20 + "\n"
+            rowString += " " + "-" * width + "\n"
+
     print(rowString)
 
 def check_input():
@@ -45,8 +48,6 @@ def check_input():
     if msvcrt.kbhit():
         c = msvcrt.getwch()
         if c == 'q':
-            print(f"MoveX: {MoveX}")
-            print(f"MoveY: {MoveY}")
             quit()
         if not keyPressed:
             if c == 'M' or c == "d":
@@ -73,10 +74,9 @@ def gameloop():
         start_time = time.perf_counter()
         check_input()
 
-        if elapsed_time >= 1/8:
+        if elapsed_time >= 1/10 * (0.98**(len(blocks)-1)):
+        # if elapsed_time >= 1/8:
             keyPressed = False
-            print_board()
-            print(f"Score: {len(blocks)-1}")
             elapsed_time = 0
 
             if game_over:
@@ -84,14 +84,17 @@ def gameloop():
                 print("You Died!")
                 print(f"Final Score: {len(blocks)-1}\n")
                 quit()
+                
+            print_board()
+            print(f"Score: {len(blocks)-1}")
 
             if coinCollected:
                 length += 1
-                coinPos = [random.randint(0,9)*2, random.randint(0, ROWS-2)]
+                coinPos = [random.randint(0,width//2-1)*2, random.randint(0, ROWS-2)]
                 closeX = abs(MoveX-coinPos[0]) <= 3
                 closeY = abs(MoveY-coinPos[1]) <= 3
                 while (coinPos in blocks) or (direction % 2 == 1 and closeX) or (direction % 2 == 0 and closeY):
-                    coinPos = [random.randint(0,9)*2, random.randint(0, ROWS-2)]
+                    coinPos = [random.randint(0, width//2-1)*2, random.randint(0, ROWS-2)]
                     closeX = abs(MoveX-coinPos[0]) <= 3
                     closeY = abs(MoveY-coinPos[1]) <= 3
                 coinCollected = False
@@ -105,10 +108,10 @@ def gameloop():
             elif direction == 4:
                 MoveY += 1
 
-            if MoveX > 18:
+            if MoveX > width-2:
                 MoveX = 0
             if MoveX < 0:
-                MoveX = 18
+                MoveX = width-2
             if MoveY > ROWS-2:
                 MoveY = 0
             if MoveY < 0:
