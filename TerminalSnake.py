@@ -1,10 +1,10 @@
+# I wrote all of this code myself
 import msvcrt, os, time, random
 
 ROWS = 10+1
 width = 10 * 2
 MoveX = (width // 2) - 2
 MoveY = (ROWS-1) // 2 - 1
-
 passive_blocks = []
 snake_head = [MoveX, MoveY]
 coinPos = [random.randint(0,width//2-1)*2, random.randint(0, ROWS-2)]
