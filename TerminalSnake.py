@@ -13,7 +13,6 @@ blocks = [[MoveX, MoveY]]
 old_pos = [MoveX, MoveY]
 length = 1
 keyPressed = False
-game_over = False
 
 def print_board():
     global blocks
@@ -68,6 +67,7 @@ def check_input():
 
 elapsed_time = 0
 coinCollected = False
+game_over = False
 def gameloop():
     global blocks, MoveX, MoveY, direction, elapsed_time, snake_head, old_pos, length, keyPressed, game_over, coinPos, coinCollected
     while True:
