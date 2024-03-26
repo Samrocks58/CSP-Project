@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Terminal Snake
 
 This python-based program works to emulate the famous game Snake within the terminal using Windows system packages like msvcrt and os to get real-time user input within the terminal and clear the terminal before printing to make it seem like frames in a video game.
@@ -54,4 +53,3 @@ This code is available at this [repository on github](https://github.com/Samrock
 
 ## Bibliography
 All libraries used are included with Python versions 3 and up.
->>>>>>> b0bb0a63239047bfcfdbae5a3eb7c4eec485b371
