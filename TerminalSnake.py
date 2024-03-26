@@ -75,7 +75,6 @@ def gameloop():
         check_input()
 
         if elapsed_time >= 1/10 * (0.98**(len(blocks)-1)):
-        # if elapsed_time >= 1/8:
             keyPressed = False
             elapsed_time = 0
 
@@ -93,6 +92,7 @@ def gameloop():
                 coinPos = [random.randint(0,width//2-1)*2, random.randint(0, ROWS-2)]
                 closeX = abs(MoveX-coinPos[0]) <= 3
                 closeY = abs(MoveY-coinPos[1]) <= 3
+                
                 while (coinPos in blocks) or (direction % 2 == 1 and closeX) or (direction % 2 == 0 and closeY):
                     coinPos = [random.randint(0, width//2-1)*2, random.randint(0, ROWS-2)]
                     closeX = abs(MoveX-coinPos[0]) <= 3
