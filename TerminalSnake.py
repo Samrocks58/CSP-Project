@@ -14,7 +14,6 @@ old_pos = [MoveX, MoveY]
 length = 1
 keyPressed = False
 game_over = False
-coinCollected = False
 
 def print_board():
     global blocks
@@ -68,6 +67,7 @@ def check_input():
                 keyPressed = True
 
 elapsed_time = 0
+coinCollected = False
 def gameloop():
     global blocks, MoveX, MoveY, direction, elapsed_time, snake_head, old_pos, length, keyPressed, game_over, coinPos, coinCollected
     while True:
@@ -92,7 +92,7 @@ def gameloop():
                 coinPos = [random.randint(0,width//2-1)*2, random.randint(0, ROWS-2)]
                 closeX = abs(MoveX-coinPos[0]) <= 3
                 closeY = abs(MoveY-coinPos[1]) <= 3
-                
+
                 while (coinPos in blocks) or (direction % 2 == 1 and closeX) or (direction % 2 == 0 and closeY):
                     coinPos = [random.randint(0, width//2-1)*2, random.randint(0, ROWS-2)]
                     closeX = abs(MoveX-coinPos[0]) <= 3
