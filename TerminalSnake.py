@@ -14,6 +14,7 @@ old_pos = [MoveX, MoveY]
 length = 1
 keyPressed = False
 
+# This function does most of the GUI for the whole program by calculating the offset of each block
 def print_board():
     global blocks
     os.system('cls')
