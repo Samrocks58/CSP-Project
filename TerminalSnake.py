@@ -5,7 +5,6 @@ ROWS = 10+1
 width = 10 * 2
 MoveX = (width // 2) - 2
 MoveY = (ROWS-1) // 2 - 1
-passive_blocks = []
 snake_head = [MoveX, MoveY]
 coinPos = [random.randint(0,width//2-1)*2, random.randint(0, ROWS-2)]
 direction=1
@@ -147,5 +146,5 @@ def sort_blocks(blist):
         return sort_blocks(blist)
     else:
         return blist
-
+        
 gameloop()
