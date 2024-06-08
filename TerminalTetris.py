@@ -25,9 +25,10 @@ JPiece = [[[0,0], [1*2,0], [2*2,0], [2*2,1]], [[0,2], [1*2,0], [1*2,1], [1*2,2]]
 ZPiece = [[[0,0], [1*2,0], [1*2,1], [2*2,1]], [[1*2,0], [0,1], [1*2,1], [0,2]]]
 SPiece = [[[1*2,0], [0,1], [1*2,1], [2*2,0]], [[0,0], [0,1], [1*2,1], [1*2,2]]]
 pieces = [IPiece, OPiece, TPiece, LPiece, JPiece, ZPiece, SPiece]
-# pieceIndex = random.randint(0, 6)
-pieceIndex = 6
+pieceIndex = random.randint(0, 6)
+# pieceIndex = 6
 rotationIndex = 0
+n = 8
 
 def make_blocks(p, r):
     global blocks, pieces
@@ -63,12 +64,18 @@ def print_board():
     print(rowString)
 
 def check_input():
-    global MoveX, MoveY, blocks, passive_blocks, rotationIndex, dropped
+    global MoveX, MoveY, blocks, passive_blocks, rotationIndex, dropped, n
     if msvcrt.kbhit():
         c = msvcrt.getwch()
         if c == 'q':
             quit()
         if not keyPressed:
+            if c == "k":
+                n -= 1
+            if c == "m":
+                n += 1
+            if c == "r":
+                passive_blocks = []
             if c == "d" or c == "c":
                 if not ([MoveX+2, MoveY] in passive_blocks):
                     clear = True
@@ -128,7 +135,7 @@ FFC = 0 # Fall Frame Counter (Obviously)
 coinCollected = False
 game_over = False
 def gameloop():
-    global blocks, passive_blocks, MoveX, MoveY, elapsed_time, FFC, game_over, pieceIndex, rotationIndex, dropped
+    global blocks, passive_blocks, MoveX, MoveY, elapsed_time, FFC, game_over, pieceIndex, rotationIndex, dropped, n
     while True:
         start_time = time.perf_counter()
         check_input()
@@ -138,7 +145,8 @@ def gameloop():
             blocks = make_blocks(pieceIndex, rotationIndex)
             print_board()
 
-            if FFC >= 8:
+            # if FFC >= 8:
+            if FFC >= n:
                 FFC = 0
                 MoveY += 1
 
@@ -158,23 +166,23 @@ def gameloop():
                     MoveY = startY
                     dropped = False
                     pieceIndex = random.randint(0, 6)
+                    # pieceIndex = 0
                     break
             
-            for y in range(ROWS-3):
+            for y in range(ROWS-2):
                 counter = 0
+                rm_list = []
                 for p in passive_blocks:
                     if p[1] == y:
                         counter += 1
+                        rm_list.append(p)
                     if counter >= width/2:
-                        for p2 in passive_blocks:
-                            if p2[1] == y:
-                                passive_blocks.remove(p2)
+                        for r in rm_list:
+                            passive_blocks.remove(r)
                         for p3 in passive_blocks:
                             if p3[1] < y:
                                 p3[1] += 1
 
-            # blocks = []
-            # blocks.append([MoveX, MoveY])
             FFC += 1
         
         # if fall_timer >= 3/4:
