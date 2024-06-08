@@ -9,12 +9,7 @@ startY = 0
 MoveX = startX
 MoveY = startY
 passive_blocks = []
-# coinPos = [random.randint(0,width//2-1)*2, random.randint(0, ROWS-2)]
-direction=1
-blocks = [[MoveX, MoveY]]
-old_pos = [MoveX, MoveY]
-length = 1
-keyPressed = False
+blocks = []
 dropped = False
 colors = ["cyan", "light_grey", "magenta", "light_yellow", "blue", "red", "green"]
 IPiece = [[[0,0], [1*2,0], [2*2,0], [3*2,0]], [[0,0], [0,1], [0,2], [0,3]]]
@@ -28,7 +23,9 @@ pieces = [IPiece, OPiece, TPiece, LPiece, JPiece, ZPiece, SPiece]
 pieceIndex = random.randint(0, 6)
 # pieceIndex = 6
 rotationIndex = 0
-n = 8
+n = 12.0
+# ^^^ start here then decrease with lines cleared till you get to 1
+# n = 8
 
 def make_blocks(p, r):
     global blocks, pieces
@@ -54,7 +51,8 @@ def print_board():
                     if b in passive_blocks:
                         square = colored("[]", "dark_grey")
                     else:
-                        square = colored("[]", colors[pieceIndex])
+                        if not ([startX, startY] in passive_blocks):
+                            square = colored("[]", colors[pieceIndex])
                     rowString += " " * (b[0]-spacesMoved) + square
                     spacesMoved = b[0]+2
             rowString += " " * (width-spacesMoved) + "\n"
@@ -68,74 +66,62 @@ def check_input():
     if msvcrt.kbhit():
         c = msvcrt.getwch()
         if c == 'q':
+            print(n)
             quit()
-        if not keyPressed:
-            if c == "k":
-                n -= 1
-            if c == "m":
-                n += 1
-            if c == "r":
-                passive_blocks = []
-            if c == "d" or c == "c":
-                if not ([MoveX+2, MoveY] in passive_blocks):
-                    clear = True
-                    for b in blocks:
-                        if ([b[0]+2, b[1]] in passive_blocks) or (b[0]+2 > width-2):
-                            clear = False
-                    if clear:
-                        MoveX += 2
-                        MoveX = min(width-2, MoveX)    
-            elif c == "a" or c == "z":
-                if not ([MoveX-2, MoveY] in passive_blocks):
-                    clear = True
-                    for b in blocks:
-                        if ([b[0]-2, b[1]] in passive_blocks):
-                            clear = False
-                    if clear:
-                        MoveX -= 2
-                        MoveX = max(0, MoveX)
-            elif c == "s" or c == "x":
-                future_blocks = make_blocks(pieceIndex, rotationIndex+1)
+        if c == "k":
+            n -= 1
+        if c == "m":
+            n += 1
+        if c == "r":
+            passive_blocks = []
+        if c == "d" or c == "c":
+            if not ([MoveX+2, MoveY] in passive_blocks):
                 clear = True
-                for i in future_blocks:
-                    if (i in passive_blocks) or (i[0] > width-2):
+                for b in blocks:
+                    if ([b[0]+2, b[1]] in passive_blocks) or (b[0]+2 > width-2):
                         clear = False
                 if clear:
-                    rotationIndex += 1
-                    if rotationIndex >= 4:
-                        rotationIndex = 0
-            elif c == " ":
-                print("DROP")
-                # MoveY = ROWS-3
-                # reachedBottom = False
-                # while not reachedBottom:
-                #     for p in passive_blocks:
-                #         for x in blocks:
-                #             if x == p:
-                #                 reachedBottom = True
-                #                 for b in blocks:
-                #                     b[1] -= 1
-                #     for b in blocks:
-                #         b[1] += 1
-                #         if b[1] >= ROWS-3:
-                #             reachedBottom = True
-                # dropped = True
-
-                # bigOffset = 1
-                # for b in blocks:
-                #     bigOffset = max(bigOffset, b[1])
-                # for p in passive_blocks:
-                #     if p[0] == MoveX and p[1] <= MoveY:
-                #         MoveY = p[1]-bigOffset
-                #     make_blocks(pieceIndex, rotationIndex)
-                # Instant DROP key
+                    MoveX += 2
+                    MoveX = min(width-2, MoveX)    
+        elif c == "a" or c == "z":
+            if not ([MoveX-2, MoveY] in passive_blocks):
+                clear = True
+                for b in blocks:
+                    if ([b[0]-2, b[1]] in passive_blocks):
+                        clear = False
+                if clear:
+                    MoveX -= 2
+                    MoveX = max(0, MoveX)
+        elif c == "s" or c == "x":
+            future_blocks = make_blocks(pieceIndex, rotationIndex+1)
+            clear = True
+            for i in future_blocks:
+                if (i in passive_blocks) or (i[0] > width-2):
+                    clear = False
+            if clear:
+                rotationIndex += 1
+                if rotationIndex >= 4:
+                    rotationIndex = 0
+        elif c == " ":
+            # Instant DROP key
+            clear = True
+            while clear:
+                oldY = MoveY
+                oldBlocks = blocks
+                MoveY += 1
+                blocks = make_blocks(pieceIndex, rotationIndex)
+                for i in blocks:
+                    if (i in passive_blocks) or (i[1] >= ROWS-2):
+                        clear = False
+                        blocks = oldBlocks
+                        MoveY = oldY
 
 elapsed_time = 0
 FFC = 0 # Fall Frame Counter (Obviously)
 coinCollected = False
-game_over = False
+linesCleared = 0
 def gameloop():
-    global blocks, passive_blocks, MoveX, MoveY, elapsed_time, FFC, game_over, pieceIndex, rotationIndex, dropped, n
+    global blocks, passive_blocks, MoveX, MoveY, elapsed_time, FFC, linesCleared, pieceIndex, rotationIndex, dropped, n
     while True:
         start_time = time.perf_counter()
         check_input()
@@ -145,29 +131,26 @@ def gameloop():
             blocks = make_blocks(pieceIndex, rotationIndex)
             print_board()
 
-            # if FFC >= 8:
-            if FFC >= n:
-                FFC = 0
-                MoveY += 1
 
-            if game_over:
-                print_board()
-                print("You Died!")
-                print(f"Final Score: {len(blocks)-1}\n")
+            if [startX, startY] in passive_blocks:
+                # print_board()
+                print("Game Over!")
+                print(f"Lines Cleared: {linesCleared}\n")
                 quit()
                 
 
             for b in blocks:
                 if (b[1] == ROWS-3) or ([b[0], b[1]+1] in passive_blocks) or dropped:
-                    # if (MoveY == ROWS-3) or ([MoveX, MoveY+1] in passive_blocks):
-                    # passive_blocks.append([MoveX, MoveY])
                     passive_blocks.extend(blocks)
                     MoveX = startX
                     MoveY = startY
                     dropped = False
                     pieceIndex = random.randint(0, 6)
-                    # pieceIndex = 0
                     break
+
+            if FFC >= n:
+                FFC = 0
+                MoveY += 1
             
             for y in range(ROWS-2):
                 counter = 0
@@ -177,6 +160,8 @@ def gameloop():
                         counter += 1
                         rm_list.append(p)
                     if counter >= width/2:
+                        n -= 0.5
+                        # n -= 1
                         for r in rm_list:
                             passive_blocks.remove(r)
                         for p3 in passive_blocks:
@@ -184,19 +169,9 @@ def gameloop():
                                 p3[1] += 1
 
             FFC += 1
-        
-        # if fall_timer >= 3/4:
-        # if fall_timer >= 3/8:
-        #     fall_timer = 0
-        #     MoveY += 1
-            # if (MoveY == ROWS-3) or ([MoveX, MoveY+1] in passive_blocks):
-            #     passive_blocks.append([MoveX, MoveY])
-            #     MoveX = startX
-            #     MoveY = startY
 
         end_time = time.perf_counter()
         elapsed_time += (end_time-start_time)
-        # fall_timer += (end_time-start_time)
 
 def sort_blocks(blist):
     sorted = False
