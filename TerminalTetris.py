@@ -28,7 +28,7 @@ n = 12.0
 # n = 8
 
 def make_blocks(p, r):
-    global blocks, pieces
+    global pieces
     offsets = pieces[p][r % len(pieces[p])]
     new_blocks = []
     for x in offsets:
@@ -122,6 +122,7 @@ coinCollected = False
 linesCleared = 0
 def gameloop():
     global blocks, passive_blocks, MoveX, MoveY, elapsed_time, FFC, linesCleared, pieceIndex, rotationIndex, dropped, n
+    cter = 0
     while True:
         start_time = time.perf_counter()
         check_input()
@@ -133,9 +134,9 @@ def gameloop():
 
 
             if [startX, startY] in passive_blocks:
-                # print_board()
+                print_board()
                 print("Game Over!")
-                print(f"Lines Cleared: {linesCleared}\n")
+                print(f"Lines Cleared: {linesCleared}")
                 quit()
                 
 
@@ -146,6 +147,7 @@ def gameloop():
                     MoveY = startY
                     dropped = False
                     pieceIndex = random.randint(0, 6)
+                    # pieceIndex = 1
                     break
 
             if FFC >= n:
@@ -160,8 +162,10 @@ def gameloop():
                         counter += 1
                         rm_list.append(p)
                     if counter >= width/2:
+                        # if not ([startX, startY] in passive_blocks): # just in case
+                        linesCleared += 1
                         n -= 0.5
-                        # n -= 1
+    
                         for r in rm_list:
                             passive_blocks.remove(r)
                         for p3 in passive_blocks:
