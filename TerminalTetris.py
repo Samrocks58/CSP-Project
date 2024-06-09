@@ -66,7 +66,7 @@ def check_input():
     if msvcrt.kbhit():
         c = msvcrt.getwch()
         if c == 'q':
-            print(n)
+            print(f"Lines Cleared: {linesCleared}\n")
             quit()
         if c == "k":
             n -= 1
