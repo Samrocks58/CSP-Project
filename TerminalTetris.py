@@ -21,6 +21,7 @@ ZPiece = [[[0,0], [1*2,0], [1*2,1], [2*2,1]], [[1*2,0], [0,1], [1*2,1], [0,2]]]
 SPiece = [[[1*2,0], [0,1], [1*2,1], [2*2,0]], [[0,0], [0,1], [1*2,1], [1*2,2]]]
 pieces = [IPiece, OPiece, TPiece, LPiece, JPiece, ZPiece, SPiece]
 pieceIndex = random.randint(0, 6)
+nextIndex = random.randint(0, 6)
 # pieceIndex = 6
 rotationIndex = 0
 n = 12.0
@@ -121,7 +122,7 @@ FFC = 0 # Fall Frame Counter (Obviously)
 coinCollected = False
 linesCleared = 0
 def gameloop():
-    global blocks, passive_blocks, MoveX, MoveY, elapsed_time, FFC, linesCleared, pieceIndex, rotationIndex, dropped, n
+    global blocks, passive_blocks, MoveX, MoveY, elapsed_time, FFC, linesCleared, pieceIndex, rotationIndex, dropped, n, nextIndex
     cter = 0
     while True:
         start_time = time.perf_counter()
@@ -146,7 +147,9 @@ def gameloop():
                     MoveX = startX
                     MoveY = startY
                     dropped = False
-                    pieceIndex = random.randint(0, 6)
+                    # pieceIndex = random.randint(0, 6)
+                    pieceIndex = nextIndex
+                    nextIndex = random.randint(0, 6)
                     # pieceIndex = 1
                     break
 
