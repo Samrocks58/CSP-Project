@@ -20,6 +20,7 @@ JPiece = [[[0,0], [1*2,0], [2*2,0], [2*2,1]], [[0,2], [1*2,0], [1*2,1], [1*2,2]]
 ZPiece = [[[0,0], [1*2,0], [1*2,1], [2*2,1]], [[1*2,0], [0,1], [1*2,1], [0,2]]]
 SPiece = [[[1*2,0], [0,1], [1*2,1], [2*2,0]], [[0,0], [0,1], [1*2,1], [1*2,2]]]
 pieces = [IPiece, OPiece, TPiece, LPiece, JPiece, ZPiece, SPiece]
+display_indexes = [1, 0, 1, 3, 3, 1, 1]
 pieceIndex = random.randint(0, 6)
 nextIndex = random.randint(0, 6)
 # pieceIndex = 6
@@ -28,35 +29,46 @@ n = 12.0
 # ^^^ start here then decrease with lines cleared till you get to 1
 # n = 8
 
-def make_blocks(p, r):
+def make_blocks(p, r, X = MoveX, Y = MoveY):
     global pieces
     offsets = pieces[p][r % len(pieces[p])]
     new_blocks = []
     for x in offsets:
-        new_blocks.append([MoveX+x[0], MoveY+x[1]])
+        new_blocks.append([X+x[0], Y+x[1]])
     return new_blocks
 
 # This function does most of the GUI for the whole program by calculating the offset of each block
 def print_board():
-    global blocks, passive_blocks, pieceIndex
+    global blocks, passive_blocks, pieceIndex, nextIndex
     os.system('cls')
     rowString = ""
     for i in range(ROWS):
         if i < ROWS-2:
             rowString += "||"
             spacesMoved = 0
+            displayBlocks = make_blocks(nextIndex, display_indexes[nextIndex], X = 22, Y = 2)
             copyList = blocks.copy()
             copyList.extend(passive_blocks)
+            copyList.extend(displayBlocks)
             for b in sort_blocks(copyList):
                 if i == b[1]:
                     if b in passive_blocks:
                         square = colored("[]", "dark_grey")
                     else:
                         if not ([startX, startY] in passive_blocks):
-                            square = colored("[]", colors[pieceIndex])
+                            if b in displayBlocks:
+                                square = colored("[]", colors[nextIndex])
+                            else:
+                                square = colored("[]", colors[pieceIndex])
                     rowString += " " * (b[0]-spacesMoved) + square
                     spacesMoved = b[0]+2
-            rowString += " " * (width-spacesMoved) + "\n"
+            rowString += " " * (width-spacesMoved)
+            # if i == 0 or i >= 4:
+            #     rowString += "\n"
+            if i == 1:
+                rowString += " N E X T" + "\n"
+            else:
+                rowString += "\n"
         else:
             rowString += "  " + "-" * width + "\n"
 
@@ -94,7 +106,7 @@ def check_input():
                     MoveX -= 2
                     MoveX = max(0, MoveX)
         elif c == "s" or c == "x":
-            future_blocks = make_blocks(pieceIndex, rotationIndex+1)
+            future_blocks = make_blocks(pieceIndex, rotationIndex+1, X = MoveX, Y = MoveY)
             clear = True
             for i in future_blocks:
                 if (i in passive_blocks) or (i[0] > width-2):
@@ -110,7 +122,7 @@ def check_input():
                 oldY = MoveY
                 oldBlocks = blocks
                 MoveY += 1
-                blocks = make_blocks(pieceIndex, rotationIndex)
+                blocks = make_blocks(pieceIndex, rotationIndex, X = MoveX, Y = MoveY)
                 for i in blocks:
                     if (i in passive_blocks) or (i[1] >= ROWS-2):
                         clear = False
@@ -130,7 +142,7 @@ def gameloop():
 
         if elapsed_time >= 1/20:
             elapsed_time = 0
-            blocks = make_blocks(pieceIndex, rotationIndex)
+            blocks = make_blocks(pieceIndex, rotationIndex, X = MoveX, Y = MoveY)
             print_board()
 
 
@@ -167,7 +179,8 @@ def gameloop():
                     if counter >= width/2:
                         # if not ([startX, startY] in passive_blocks): # just in case
                         linesCleared += 1
-                        n -= 0.5
+                        # n -= 0.5
+                        n -= 0.1
     
                         for r in rm_list:
                             passive_blocks.remove(r)
