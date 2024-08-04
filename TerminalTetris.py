@@ -180,7 +180,8 @@ def gameloop():
                         # if not ([startX, startY] in passive_blocks): # just in case
                         linesCleared += 1
                         # n -= 0.5
-                        n -= 0.1
+                        # n -= 0.1
+                        n -= 0.2
     
                         for r in rm_list:
                             passive_blocks.remove(r)
