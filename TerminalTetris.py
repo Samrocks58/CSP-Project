@@ -1,5 +1,5 @@
 # I wrote all of this code myself
-import msvcrt, os, time, random
+import msvcrt, os, time, random, readkeys
 from termcolor import colored
 
 ROWS = 20+2
@@ -51,22 +51,29 @@ def print_board():
             rowString += "||"
             spacesMoved = 0
             if nextIndex == 0:
-                displayBlocks = make_blocks(nextIndex, display_indexes[nextIndex], X = 22, Y = 2)
+                displayBlocks = make_blocks(nextIndex, display_indexes[nextIndex], X = 23, Y = 2)
             else:
-                displayBlocks = make_blocks(nextIndex, display_indexes[nextIndex], X = 22, Y = 3)
+                displayBlocks = make_blocks(nextIndex, display_indexes[nextIndex], X = 23, Y = 3)
             copyList = blocks.copy()
             copyList.extend(passive_blocks)
             copyList.extend(displayBlocks)
             storeBlocks = []
             if swapIndex != -1:
-                storeBlocks = make_blocks(swapIndex, display_indexes[swapIndex], X = 22, Y= 8)
+                storeBlocks = make_blocks(swapIndex, display_indexes[swapIndex], X = 23, Y= 8)
                 copyList.extend(storeBlocks)
             
             end = find_bottom_blocks()
             end_blocks = end[0]
-            endY = end[1]
-            if endY != MoveY:
-                copyList.extend(end_blocks)
+            # endY = end[1]
+            end_blocks = list(filter(lambda x: not(x in blocks), end_blocks))
+            copyList.extend(end_blocks)
+            # if endY != MoveY and len(list(filter(lambda x: x in blocks, end_blocks))) == 0:
+            #     copyList.extend(end_blocks)
+            # else:
+            #     # end_blocks = []
+            #     end_blocks = list(filter(lambda x: not(x in blocks), end_blocks))
+            #     copyList.extend(end_blocks)
+
 
             for b in sort_blocks(copyList):
                 if i == b[1]:
@@ -135,6 +142,7 @@ def find_bottom_blocks():
 
 def check_input():
     global MoveX, MoveY, blocks, passive_blocks, rotationIndex, dropped, n, inColor, pieceIndex, swapIndex, swapped, nextIndex
+    # print(readkeys.getch())
     if msvcrt.kbhit():
         c = msvcrt.getwch()
         if c == 'q':
@@ -147,13 +155,16 @@ def check_input():
         #     n += 1
         # if c == "c":
         #     inColor = not inColor
-        # if c == "r":
-        #     passive_blocks = []
+        if c == "r":
+            passive_blocks = []
+        # if c in "1234567":
+        #     nextIndex = eval(c) - 1
         if c == "d":
             if not ([MoveX+2, MoveY] in passive_blocks):
                 clear = True
-                for b in blocks:
-                    if ([b[0]+2, b[1]] in passive_blocks) or (b[0]+2 > width-2):
+                future_blocks = make_blocks(pieceIndex, rotationIndex, X = MoveX+2, Y = MoveY)
+                for b in future_blocks:
+                    if ([b[0], b[1]] in passive_blocks) or (b[0] > width-2):
                         clear = False
                 if clear:
                     MoveX += 2
@@ -183,6 +194,7 @@ def check_input():
             blocks = test[0]
             MoveY = test[1]
         elif c == "e":
+            # Block SWAP key
             if not swapped:
                 swapped = True
                 MoveX = startX
